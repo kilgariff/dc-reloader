@@ -1,0 +1,67 @@
+This file acknowledges the various 3rd party software that is used in one or
+more of the ports of this program. Note that this list does not include the
+various components usually included with the operating system or compiler for
+each platform supported.
+
+Sylverant PSO Patcher
+---------------------
+This program uses source files from Sylverant PSO Patcher which is licensed
+under the same license as this project (GPLv3). See COPYING for a full copy of this license.
+
+Copyright (C) 2013 Lawrence Sebald. All rights reserved.
+
+KallistiOS
+----------
+This program is compiled against source files from KallistiOS. KOS is licensed
+under the following terms:
+
+Copyright (C) 1997-2013 KallistiOS Contributors. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. Neither the name of Cryptic Allusion nor the names of its contributors
+   may be used to endorse or promote products derived from this software
+   without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+
+See the AUTHORS.KOS file for the full list of KOS authors and the dates of their
+contributions.
+
+The files covered under this notice are the following:
+    In patcher/: biosfont.[ch] cdrom.[ch] fb_console.c video.[ch] cache.s
+    In img-enc/: bin2c.c
+
+cdfs.[ch], maple.[ch]
+---------------------
+These files were originally written by Marcus Comstedt, and placed in the Public
+Domain. I have made a few changes to some of these files, although nothing that
+would require Copyright protection in and of itself. Original versions of these
+files can be obtained from http://mc.pp.se/dc/ (on the Software page, look for
+the Example Software section).
+
+These files were provided as-is with no warranty whatsoever. That applies to the
+modified versions too, of course.
+
+startup.s
+---------
+This file was adapted from code also from Marcus Comstedt and placed in the
+Public Domain. However, a significant amount of additional code was added to
+this file in creating this program. The new code (the _boot_stub function,
+especially) is GPLv3'ed, like the rest of the program.
