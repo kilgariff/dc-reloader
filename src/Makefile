@@ -19,7 +19,7 @@
 AS = sh-elf-as -little
 CC = sh-elf-gcc
 OBJCOPY = sh-elf-objcopy -O binary
-OBJS = startup.o gd.o back_to_menu.o
+OBJS = startup.o go.o back_to_menu.o
 B2M_CFLAGS = -ml -ffunction-sections -fdata-sections -ffreestanding -Wall -Werror -std=c99 -Wextra -Os -flto=auto
 
 all: clean disc.cdi

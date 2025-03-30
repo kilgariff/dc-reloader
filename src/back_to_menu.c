@@ -21,6 +21,8 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define CMD_PIOREAD 16  /**< \brief Read via PIO */
+#define CMD_GETTOC2 19  /**< \brief Read TOC */
 #define CMD_INIT    24  /**< \brief Initialize the drive */
 #define CMD_GETSES  35  /**< \brief Get session */
 #define ERR_OK          0   /**< \brief No error */
@@ -56,10 +58,6 @@ static void memcpy(void *p1, const void *p2, uint32 count) {
     while(count--)
         *b1++ = *b2++;
 }
-
-// Defined in gd.s:
-int gd_read_sector(uint32 fad, uint16 *out, uint32 *sz);
-int gd_read_toc(uint16 *out, uint32 *sz);
 
 /* GD-Rom BIOS calls... named mostly after Marcus' code. None have more
    than two parameters; R7 (fourth parameter) needs to describe
@@ -208,26 +206,43 @@ int cdrom_init() {
     return 0;
 }
 
-static int read_toc(CDROM_TOC *toc, int session) {
-    uint32 sz = sizeof(CDROM_TOC);
-    (void)session;
-    gd_read_toc((uint16 *)toc, &sz);
-    return 0;
+/* Read the table of contents */
+int cdrom_read_toc(CDROM_TOC *toc_buffer, int session) {
+  struct {
+      int session;
+      void    *buffer;
+  } params;
+  int rv;
+
+  params.session = session;
+  params.buffer = toc_buffer;
+  rv = cdrom_exec_cmd(CMD_GETTOC2, &params);
+
+  return rv;
 }
 
-static int read_sectors(char *buf, int sec, int num) {
-    int i;
-    uint32 sz = 2048;
+/* Enhanced Sector reading: Choose mode to read in. */
+int cdrom_read_sectors_ex(void *buffer, int sector, int cnt) {
+  struct {
+      int sec, num;
+      void *buffer;
+      int is_test;
+  } params;
+  int rv = ERR_OK;
+  unsigned buf_addr = (unsigned) buffer;
 
-    for(i = 0; i < num; ++i) {
-        if(gd_read_sector(sec++, (uint16 *)buf, &sz) != 2048) {
-            return -1;
-        }
+  params.sec = sector;    /* Starting sector */
+  params.num = cnt;       /* Number of sectors */
+  params.is_test = 0;     /* Enable test mode */
+  params.buffer = buffer;
 
-        buf += 2048;
-    }
+  if(buf_addr & 0x01) {
+      // dbglog(DBG_ERROR, "cdrom_read_sectors_ex: Unaligned memory for PIO (2-byte).\n");
+      return ERR_SYS;
+  }
+  rv = cdrom_exec_cmd(CMD_PIOREAD, &params);
 
-    return 0;
+  return rv;
 }
 
 static int ntohlp(unsigned char *ptr) {
@@ -267,9 +282,9 @@ static int find_root(unsigned int *psec, unsigned int *plen) {
     unsigned int sec;
 
     cdrom_reinit();
-    read_toc(&toc, 0);
+    cdrom_read_toc(&toc, 0);
     sec = find_datatrack(&toc);
-    read_sectors((char *)sector_buffer, sec+16, 1);
+    cdrom_read_sectors_ex((char *)sector_buffer, sec+16, 1);
 
     /* Need to add 150 to LBA to get physical sector number */
     *psec = ntohlp(((unsigned char *)sector_buffer)+156+6) + 150;
@@ -292,7 +307,7 @@ static int low_find(unsigned int sec, unsigned int dirlen, int isdir,
   while(dirlen>0) {
     unsigned int i;
     unsigned char *rec = (unsigned char *)sector_buffer;
-    read_sectors((char *)sector_buffer, sec, 1);
+    cdrom_read_sectors_ex((char *)sector_buffer, sec, 1);
     for(i=0; i<2048 && i<dirlen && rec[0] != 0; i += rec[0], rec += rec[0]) {
       if((rec[25]&2) == isdir && fncompare(fname, fnlen, (char *)rec+33,
                                            rec[32])) {
@@ -348,7 +363,7 @@ int pread(void *buf, unsigned int nbyte, unsigned int offset) {
   /* Read whole sectors directly into buf if possible */
   if(nbyte>=2048 && !(offset & 2047))
   {
-    if((r = read_sectors(buf, fh.sec0 + (offset>>11), nbyte>>11)))
+    if((r = cdrom_read_sectors_ex(buf, fh.sec0 + (offset>>11), nbyte>>11)))
       return r;
     else {
       t = nbyte & ~2047;;
@@ -384,7 +399,7 @@ int pread(void *buf, unsigned int nbyte, unsigned int offset) {
       t += r;
   } else {
     /* Just one sector.  Read it and copy the relevant part. */
-    if((r = read_sectors((char *)sector_buffer, fh.sec0+(offset>>11), 1)))
+    if((r = cdrom_read_sectors_ex((char *)sector_buffer, fh.sec0+(offset>>11), 1)))
       return r;
     memcpy(buf, ((char *)sector_buffer)+(offset&2047), nbyte);
     t += nbyte;
@@ -401,17 +416,12 @@ int read(void *buf, unsigned int nbyte) {
   return r;
 }
 
-////////////
+static uint8 *bin = (uint8 *)(0xac010000);
 
-#define BIN_BASE    0xac010000
-static uint8 *bin = (uint8 *)BIN_BASE;
-extern void boot_stub(void *, uint32) __attribute__((noreturn));
+__attribute__ ((noreturn)) void go(unsigned int addr);
 
-int main() {
-
-    // Pretend to KallistiOS games that we're dcload so that arch_exit() will jump to our exit syscall.
-    //*((volatile unsigned int *)0xac004004) = 0xdeadbeed;
-
+int boot_the_menu()
+{
     int cur = 0, rsz;
     char const * filename = "MENU.BIN";
     int filename_len = 8;
@@ -425,8 +435,14 @@ int main() {
         cur += rsz;
     }
 
-    /* The binary is in place, so let's try to boot it, shall we? */
-    void (*f)(void) __attribute__((noreturn));
-    f = (void *)((uint32)(&boot_stub) | 0xa0000000);
-    f();
+    go((unsigned int) bin);
+}
+
+int main()
+{
+    while (1)
+    {
+        boot_the_menu();
+    }
+    return 0;
 }
