@@ -1,7 +1,7 @@
-## Dreamcast Back to Menu
+## DC Reloader
 
 ### What is it?
-A simple loader for Dreamcast indie games made with KallistiOS that lets them easily return to the menu when they call `arch_exit()`. Without this loader, each game would need to manually load the menu binary and call `arch_exec()`.
+A simple loader for Dreamcast indie games made with KallistiOS that lets them easily reload or return to a main menu when they call `arch_exit()`. Without this loader, games would have to manually reload the binary and call `arch_exec()`.
 
 This was made for [Dream Disc '24](https://orcface.com/events/01-dream-disc-24) where I didn't actually realise that calling `arch_exit()` wouldn't be sufficient, so without this loader we would need to get 10 people to re-submit their games with the addition of manual binary loading and `arch_exec()` just to return to the menu.
 
