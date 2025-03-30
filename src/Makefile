@@ -19,7 +19,7 @@
 AS = sh-elf-as -little
 CC = sh-elf-gcc
 OBJCOPY = sh-elf-objcopy -O binary
-OBJS = startup.o go.o back_to_menu.o
+OBJS = startup.o go.o reloader.o
 B2M_CFLAGS = -ml -ffunction-sections -fdata-sections -ffreestanding -Wall -Werror -std=c99 -Wextra -Os -flto=auto
 
 all: clean disc.cdi
@@ -27,13 +27,13 @@ all: clean disc.cdi
 %.o: %.c
 	sh-elf-gcc $(B2M_CFLAGS) $(CPPFLAGS) -c $< -o $@
 
-back_to_menu.elf: $(OBJS)
+reloader.elf: $(OBJS)
 	$(CC) $(B2M_CFLAGS) -o $@ -Wl,--gc-sections -Tshlelf.xc -nostartfiles -nostdlib $^
 
-back_to_menu.bin: back_to_menu.elf
+reloader.bin: reloader.elf
 	$(OBJCOPY) $^ $@
 
-loader.elf: loader.s back_to_menu.bin
+loader.elf: loader.s reloader.bin
 	sh-elf-gcc -ml -o $@ loader.s -nostartfiles -nostdlib -Ttext=0x8c010000 -Os
 
 loader.bin: loader.elf
@@ -44,8 +44,8 @@ disc.cdi: loader.elf menu.bin
 
 .PHONY : clean
 clean:
-	-rm -f back_to_menu.bin back_to_menu.elf loader.bin loader.elf $(OBJS) disc.cdi
+	-rm -f reloader.bin reloader.elf loader.bin loader.elf $(OBJS) disc.cdi
 
 .PHONY : rm-elf
 rm-elf:
-	-rm -f back_to_menu.elf loader.elf
+	-rm -f reloader.elf loader.elf

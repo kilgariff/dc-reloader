@@ -423,7 +423,7 @@ __attribute__ ((noreturn)) void go(unsigned int addr);
 int boot_the_menu()
 {
     int cur = 0, rsz;
-    char const * filename = "MENU.BIN";
+    char const * filename = "MAIN.BIN";
     int filename_len = 8;
 
     cdrom_init();

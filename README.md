@@ -19,4 +19,4 @@ Just put your `menu.bin` file in the `src` directory, change to that directory a
 
 ### Attribution
 
-Based on code from [Sylverant PSO Patcher](https://github.com/sega-dreamcast/sylverant-pso-patcher) by Lawrence Sebald, which includes code from [KallistiOS](https://github.com/KallistiOS/KallistiOS) originally by Megan Potter.
+Based on code from [Sylverant PSO Patcher](https://github.com/sega-dreamcast/sylverant-pso-patcher) by Lawrence Sebald, which includes code from [KallistiOS](https://github.com/KallistiOS/KallistiOS) originally by Megan Potter. The file `go.s` is taken from `dc-load-ip` (originally by Andrew Kieschnick, since modified/maintained by Moopthehedgehog and SiZiOUS).

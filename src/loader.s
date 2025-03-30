@@ -51,6 +51,6 @@ bin_base:
     .section    .rodata
     .balign     4
 bin:
-    .incbin     "back_to_menu.bin"
+    .incbin     "reloader.bin"
     .balign     4
 bin_end:
