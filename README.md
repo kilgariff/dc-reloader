@@ -8,7 +8,7 @@ This was made for [Dream Disc '24](https://orcface.com/events/01-dream-disc-24) 
 ### How does it work?
 It consists of a simple loader based on the code from the Sylverant PSO Patcher and using a similar mechanism to [dc-load-ip](https://github.com/sizious/dcload-ip).
 
-On load, this program copies itself to `0x8C004000` (AKA. `0xAC004000` in P2) which is unused space in the Dreamcast's memory that lies between the syscalls and IP.BIN. This means it stays in memory regardless of which game is running. It also writes a special value `0xdeadbeef` to the address `0xAC004004`, which KallistiOS reads to determine where to go on exit.
+On load, this program copies itself to `0x8C004000` (AKA. `0xAC004000` in P2) which is unused space in the Dreamcast's memory that lies between the syscalls and IP.BIN. This means it stays in memory regardless of which game is running. It writes its original stack pointer to r15 so that the loaded binary can return to it on exit (something KallistiOS supports).
 
 ### Requirements
 The KallistiOS gcc-sh4 toolchain is required (tested on version 14.2.0).
