@@ -39,8 +39,8 @@ loader.elf: loader.s reloader.bin
 loader.bin: loader.elf
 	$(OBJCOPY) $^ $@ -R .stack 
 
-disc.cdi: loader.elf menu.bin
-	mkdcdisc -e loader.elf -f menu.bin -o disc.cdi -N
+disc.cdi: loader.elf main.bin
+	mkdcdisc -e loader.elf -f main.bin -o disc.cdi
 
 .PHONY : clean
 clean:

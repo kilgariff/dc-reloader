@@ -15,7 +15,7 @@ The KallistiOS gcc-sh4 toolchain is required (tested on version 14.2.0).
 `mkdcdisc` should be available in the user's `PATH` in order to build the .cdi image.
 
 ### How do I use it?
-Just put your `menu.bin` file in the `src` directory, change to that directory and run `make`. A CDI file called `disc.cdi` will be produced. After your menu boots, any subsequent times a program exits using `arch_exit()`, the menu will be loaded again.
+Just put your `main.bin` file in the `src` directory, change to that directory and run `make`. A CDI file called `disc.cdi` will be produced. After your menu boots, any subsequent times a program exits using `arch_exit()`, the menu will be loaded again.
 
 ### Attribution
 
